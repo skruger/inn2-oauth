@@ -53,6 +53,8 @@ EOF
 
 chmod 0644 "$PKGDIR/DEBIAN/control"
 
+echo "${CONFIG_DEST}" >> "${PKGDIR}/DEBIAN/conffiles"
+
 echo "Building .deb package (you may be prompted for fakeroot if available)..."
 if command -v fakeroot >/dev/null 2>&1; then
   fakeroot dpkg-deb --build "$PKGDIR"
