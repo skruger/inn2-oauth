@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"errors"
+	"flag"
 	"fmt"
 	"inn2-oauth/oauthclient"
 	"io"
@@ -64,10 +65,10 @@ func ReadAuthRequest(r io.Reader) (clientAuthname, clientPassword string, err er
 
 func main() {
 
-	oauthCfgFile := os.Getenv("OAUTH_CONFIG_FILE")
-	if oauthCfgFile == "" {
-		oauthCfgFile = "oauth-login-inn2.yaml"
-	}
+	var oauthCfgFile string
+	flag.StringVar(&oauthCfgFile, "config", "/etc/news/oauth-login-inn2.yaml", "Path to OAuth config file")
+	flag.Parse()
+
 	oauthCfg, err := oauthclient.LoadOauthConfig(oauthCfgFile)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Error loading OAuth config: %v\n", err)
