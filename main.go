@@ -75,12 +75,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	if len(os.Args) > 1 && os.Args[1] == "test" {
-		// For testing, just print the loaded config and exit.
-		_, _ = fmt.Fprintf(os.Stderr, "Loaded OAuth config: %+v\n", oauthCfg)
-		return
-	}
-
 	// Small CLI wrapper: read auth request from stdin and print parsed values.
 	authname, password, err := ReadAuthRequest(os.Stdin)
 	if err != nil {
