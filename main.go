@@ -81,7 +81,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(2)
 	}
-	fmt.Printf("ClientAuthname=%q ClientPassword=%q\n", authname, password)
 
 	userParts := strings.Split(authname, "@")
 	var domain string
@@ -98,12 +97,11 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error getting client for domain %s: %v\n", domain, err)
 		os.Exit(3)
 	}
-	tokenResponse, err := client.ObtainAccessToken(authname, password)
+	_, err = client.ObtainAccessToken(authname, password)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error obtaining access token: %v\n", err)
 		os.Exit(4)
 	}
-	fmt.Printf("AccessToken=%4s...\n", tokenResponse.AccessToken)
 
 	os.Exit(0)
 }

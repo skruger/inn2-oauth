@@ -24,7 +24,6 @@ func LoadOauthConfig(filename string) (*OauthConfig, error) {
 		return nil, err
 	}
 	cfg := &OauthConfig{}
-	fmt.Fprintf(os.Stderr, "Loaded config file %s:\n%s\n", filename, string(cfgBytes))
 	err = yaml.Unmarshal(cfgBytes, cfg)
 	if err != nil {
 		return nil, err
