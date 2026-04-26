@@ -103,5 +103,7 @@ func main() {
 		os.Exit(4)
 	}
 
+	fmt.Printf("User:%s", authname)
+
 	os.Exit(0)
 }
