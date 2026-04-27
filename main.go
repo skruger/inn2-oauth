@@ -97,10 +97,29 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error getting client for domain %s: %v\n", domain, err)
 		os.Exit(3)
 	}
-	_, err = client.ObtainAccessToken(authname, password)
+	var accessToken string
+
+	if client.OauthTokenUsername != "" && client.OauthTokenUsername == authname {
+		accessToken = password
+	} else {
+		tokenResponse, err := client.ObtainAccessToken(authname, password)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error obtaining access token: %v\n", err)
+			os.Exit(4)
+		}
+		accessToken = tokenResponse.AccessToken
+	}
+
+	userInfo, err := client.CheckIdentity(accessToken)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error obtaining access token: %v\n", err)
-		os.Exit(4)
+		fmt.Fprintf(os.Stderr, "error checking identity: %v\n", err)
+		os.Exit(5)
+	}
+	for _, field := range client.UsernameFields {
+		if val, ok := userInfo[field]; ok {
+			authname = val
+			break
+		}
 	}
 
 	fmt.Printf("User:%s", authname)

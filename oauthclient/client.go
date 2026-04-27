@@ -16,18 +16,22 @@ type TokenResponse struct {
 }
 
 type OauthClient struct {
-	ClientID     string
-	ClientSecret string
-	TokenURL     string
-	IdentityURL  string
+	ClientID           string
+	ClientSecret       string
+	TokenURL           string
+	IdentityURL        string
+	UsernameFields     []string
+	OauthTokenUsername string
 }
 
-func NewOauthClient(clientID, clientSecret, tokenURL, identityURL string) *OauthClient {
+func NewOauthClient(cfg ClientConfig) *OauthClient {
 	return &OauthClient{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		TokenURL:     tokenURL,
-		IdentityURL:  identityURL,
+		ClientID:           cfg.ClientId,
+		ClientSecret:       cfg.ClientSecret,
+		TokenURL:           cfg.TokenURL,
+		IdentityURL:        cfg.IdentityURL,
+		UsernameFields:     cfg.UsernameFields,
+		OauthTokenUsername: cfg.OauthTokenUsername,
 	}
 }
 
@@ -54,7 +58,7 @@ func (oc *OauthClient) ObtainAccessToken(username, password string) (*TokenRespo
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		// return body for debugging along with an error
-		return nil, fmt.Errorf("server returned status %d: %v", resp.StatusCode, body)
+		return nil, fmt.Errorf("server returned status %d: %s", resp.StatusCode, body)
 	}
 	tokenResponse := TokenResponse{}
 	err = json.Unmarshal(body, &tokenResponse)
@@ -64,29 +68,32 @@ func (oc *OauthClient) ObtainAccessToken(username, password string) (*TokenRespo
 	return &tokenResponse, nil
 }
 
-func (oc *OauthClient) CheckIdentity(token string) error {
+func (oc *OauthClient) CheckIdentity(token string) (map[string]string, error) {
+	var identityResponse map[string]string
 	if token == "" {
-		return fmt.Errorf("empty token")
+		return identityResponse, fmt.Errorf("empty token")
 	}
 	req, err := http.NewRequest(http.MethodGet, oc.IdentityURL, nil)
 	if err != nil {
-		return fmt.Errorf("create request: %w", err)
+		return identityResponse, fmt.Errorf("create request: %w", err)
 	}
 	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("http request: %w", err)
+		return identityResponse, fmt.Errorf("http request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("read response body: %w", err)
+		return identityResponse, fmt.Errorf("read response body: %w", err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("identity check failed: status %d: %s", resp.StatusCode, string(body))
+		return identityResponse, fmt.Errorf("identity check failed: status %d: %s", resp.StatusCode, string(body))
 	}
 	// Success
-	return nil
+	err = json.Unmarshal(body, &identityResponse)
+
+	return identityResponse, err
 }

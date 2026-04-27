@@ -8,10 +8,12 @@ import (
 )
 
 type ClientConfig struct {
-	ClientId     string `yaml:"client_id"`
-	ClientSecret string `yaml:"client_secret"`
-	TokenURL     string `yaml:"token_url"`
-	IdentityURL  string `yaml:"identity_url"`
+	ClientId           string   `yaml:"client_id"`
+	ClientSecret       string   `yaml:"client_secret"`
+	TokenURL           string   `yaml:"token_url"`
+	IdentityURL        string   `yaml:"identity_url"`
+	UsernameFields     []string `yaml:"username_fields"`
+	OauthTokenUsername string   `yaml:"oauth_token_username"`
 }
 
 type OauthConfig struct {
@@ -40,5 +42,5 @@ func (oc *OauthConfig) GetClient(clientName string) (*OauthClient, error) {
 		fmt.Fprintf(os.Stderr, "Client %s has missing fields: client_id=%q, client_secret=%q, token_url=%q, identity_url=%q\n", clientName, cfg.ClientId, cfg.ClientSecret, cfg.TokenURL, cfg.IdentityURL)
 		return nil, fmt.Errorf("client %s has missing fields", clientName)
 	}
-	return NewOauthClient(cfg.ClientId, cfg.ClientSecret, cfg.TokenURL, cfg.IdentityURL), nil
+	return NewOauthClient(cfg), nil
 }
