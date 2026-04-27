@@ -108,6 +108,15 @@ func main() {
 			os.Exit(4)
 		}
 		accessToken = tokenResponse.AccessToken
+
+		if client.QuickAuth {
+			if client.QuickDomain != "" {
+				fmt.Printf("User:%s@%s", authname, client.QuickDomain)
+			} else {
+				fmt.Printf("User:%s", authname)
+			}
+			os.Exit(0)
+		}
 	}
 
 	userInfo, err := client.CheckIdentity(accessToken)

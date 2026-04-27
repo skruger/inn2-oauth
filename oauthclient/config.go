@@ -14,6 +14,8 @@ type ClientConfig struct {
 	IdentityURL        string   `yaml:"identity_url"`
 	UsernameFields     []string `yaml:"username_fields"`
 	OauthTokenUsername string   `yaml:"oauth_token_username"`
+	QuickAuth          bool     `yaml:"quick_auth"`
+	QuickDomain        string   `yaml:"quick_auth_domain"`
 }
 
 type OauthConfig struct {

@@ -22,6 +22,8 @@ type OauthClient struct {
 	IdentityURL        string
 	UsernameFields     []string
 	OauthTokenUsername string
+	QuickAuth          bool
+	QuickDomain        string
 }
 
 func NewOauthClient(cfg ClientConfig) *OauthClient {
@@ -32,6 +34,8 @@ func NewOauthClient(cfg ClientConfig) *OauthClient {
 		IdentityURL:        cfg.IdentityURL,
 		UsernameFields:     cfg.UsernameFields,
 		OauthTokenUsername: cfg.OauthTokenUsername,
+		QuickAuth:          cfg.QuickAuth,
+		QuickDomain:        cfg.QuickDomain,
 	}
 }
 
